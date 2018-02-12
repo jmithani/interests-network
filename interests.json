@@ -1,0 +1,26 @@
+{
+  "nodes": [
+    {"id": "data"},
+    {"id": "design"},
+    {"id": "development"},
+    {"id": "user experience"},
+    {"id": "games"},
+    {"id": "civic tech"},
+    {"id": "open source"},
+    {"id": "journalism"},
+    {"id": "visualization"}
+  ],
+  "links": [
+    {"source": "data", "target": "journalism"},
+    {"source": "data", "target": "visualization"},
+    {"source": "data", "target": "user experience"},
+    {"source": "design", "target": "user experience"},
+    {"source": "design", "target": "games"},
+    {"source": "design", "target": "visualization"},
+    {"source": "design", "target": "civic tech"},
+    {"source": "development", "target": "civic tech"},
+    {"source": "development", "target": "visualization"},
+    {"source": "development", "target": "games"},
+    {"source": "development", "target": "open source"}
+  ]
+}

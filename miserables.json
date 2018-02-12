@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {"id": "data", "group": 0 },
+    {"id": "design", "group": 1 },
+    {"id": "development", "group": 2 },
+    {"id": "user experience", "group": 1 },
+    {"id": "games", "group": 2 },
+    {"id": "civic tech", "group": 2 },
+    {"id": "open source", "group": 2 },
+    {"id": "journalism", "group": 1 }
+  ],
+  "links": [
+    {"source": "data", "target": "journalism", "value": 1},
+    {"source": "data", "target": "user experience", "value": 1},
+    {"source": "design", "target": "user experience", "value": 1},
+    {"source": "design", "target": "games", "value": 1},
+    {"source": "design", "target": "visualization", "value": 1},
+    {"source": "design", "target": "civic tech", "value": 1},
+    {"source": "development", "target": "civic tech", "value": 1},
+    {"source": "development", "target": "visualization", "value": 1},
+    {"source": "development", "target": "games", "value": 1},
+    {"source": "development", "target": "open source", "value": 1}
+  ]
+}
