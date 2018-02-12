@@ -55,12 +55,31 @@ d3.json("interests.json", function(error, graph) {
 
   simulation.nodes(graph.nodes)
       .on("tick", ticked);
+      // .on("tick", function(d, i) {
+      //     if (i < 3) {
+      //
+      //       // From documentation
+      //       function wiggle(min, max) {
+      //         r = Math.floor(Math.random() * (max - min + 1)) + min;
+      //         return r / 10.0;
+      //       }
+      //
+      //       d.fx = (w / 2) + wiggle(-10,10);
+      //       d.fy = (h / 2) + wiggle(-10,10);
+      //     }
+      // });
 
   simulation.force("link")
       .links(graph.links)
-      .distance(300);
+      .distance(width/4);
+
+  function wiggle(min, max) {
+      r = Math.floor(Math.random() * (max - min + 1)) + min;
+      return r / 10.0;
+   };
 
   function ticked() {
+    //console.log(this)
     link
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
@@ -68,8 +87,8 @@ d3.json("interests.json", function(error, graph) {
         .attr("y2", function(d) { return d.target.y; });
 
     node
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+        .attr("cx", function(d, i) { return (i < 3) ? ((960 / 2) + wiggle(-10,10)) : d.x; })
+        .attr("cy", function(d, i) { return (i < 3) ? ((600 / 2) + wiggle(-10,10)) : d.y; });
   }
 });
 
