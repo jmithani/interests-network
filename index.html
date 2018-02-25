@@ -3,7 +3,6 @@
 <style>
 
 .links line {
-  stroke: #999;
   stroke-opacity: 0.6;
 }
 
@@ -12,9 +11,10 @@
   stroke-width: 1.5px;
 }
 
-.nodes text {
-  font-size: 10px;
-  color: green;
+text {
+  font-family: sans-serif;
+  font-style: oblique;
+  font-weight: bold;
 }
 
 </style>
@@ -22,81 +22,96 @@
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
+var RADIUS = 12;
+var STROKEWIDTH = 3;
+
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height");
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
+// I want the larger nodes to stay closer together
+// thx for the formatting help https://bl.ocks.org/rsk2327/23622500eb512b5de90f6a916c836a40
+var attractiveForce = d3.forceManyBody()
+                        .strength(function(d) {
+                          return (+d.num > 1) ? 100 : -3000;
+                        });
+
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
+    .force("charge", attractiveForce)
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 d3.json("interests.json", function(error, graph) {
   if (error) throw error;
 
+/************* LINKS ***************/
   var link = svg.append("g")
       .attr("class", "links")
     .selectAll("line")
     .data(graph.links)
     .enter().append("line")
-      .attr("stroke-width", 2);
+      .attr("stroke-width", STROKEWIDTH)
+      .attr("stroke", "#D8D2E1");
 
+/************* NODES ***************/
   var node = svg.append("g")
       .attr("class", "nodes")
     .selectAll("circle")
     .data(graph.nodes)
     .enter().append("circle")
-      .attr("r", 8)
-      .attr("fill", function(d) { return color(d.group); })
+      .attr("r", function(d) {
+          return d.num * RADIUS;
+      })
+      .attr("fill", function(d) {
+        if (+d.num > 1) {
+          return "#80FFE8";
+        } else {
+          return "#8D91DD";
+        }
+      })
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended));
 
-  console.log(graph.nodes)
+/************* LABELS FOR THE NODES ***************/
   var labels = svg.selectAll("text")
         .data(graph.nodes)
         .enter()
         .append("text")
-        .attr("dx", function(d) {
-          //console.log(d.x)
-          return 12;
-        })
+        .attr("text-anchor", "middle")
         .attr("dy", function(d) {
-          console.log(d)
-          return ".35em";
+          return (+d.num > 1) ? 4 : 2;
         })
-        .text(function(d) { return d.id; });
+        .style("font-size", function(d) {
+          return (+d.num > 1) ? 12 : 8;
+        })
+        .style("text-transform", function(d) {
+          return (+d.num > 1) ? "uppercase" : "none";
+        })
+        .text(function(d) { return d.id; })
+        .call(d3.drag() // This is one both node and label because right now they are stacked
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
 
-  // node.append("title")
-  //     .text(function(d) { return d.id; });
+/* For placing on right on nodes, saving for future reference */
+        // .attr("dx", function(d) {
+        //   return (+d.num > 1) ? 16 : 12;
+        // })
+        // .attr("dy", function(d) {
+        //   console.log(d)
+        //   return ".35em";
+        // })
 
   simulation.nodes(graph.nodes)
       .on("tick", ticked);
-      // .on("tick", function(d, i) {
-      //     if (i < 3) {
-      //
-      //       // From documentation
-      //       function wiggle(min, max) {
-      //         r = Math.floor(Math.random() * (max - min + 1)) + min;
-      //         return r / 10.0;
-      //       }
-      //
-      //       d.fx = (w / 2) + wiggle(-10,10);
-      //       d.fy = (h / 2) + wiggle(-10,10);
-      //     }
-      // });
 
   simulation.force("link")
       .links(graph.links)
-      .distance(width/10);
-
-  function wiggle(min, max) {
-      r = Math.floor(Math.random() * (max - min + 1)) + min;
-      return r / 10.0;
-   };
+      .distance(width/8); // Keeping all the same for now
 
   function ticked() {
     //console.log(this)
@@ -107,8 +122,8 @@ d3.json("interests.json", function(error, graph) {
         .attr("y2", function(d) { return d.target.y; });
 
     node
-        .attr("cx", function(d, i) { return d.x; }) //{ return (i < 3) ? ((960 / 2) + wiggle(-10,10)) : d.x; })
-        .attr("cy", function(d, i) { return d.y; }); //{ return (i < 3) ? ((600 / 2) + wiggle(-10,10)) : d.y; });
+        .attr("cx", function(d, i) { return d.x; })
+        .attr("cy", function(d, i) { return d.y; });
 
     labels
       .attr("x", function(d) { return d.x; })
