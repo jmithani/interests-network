@@ -12,6 +12,11 @@
   stroke-width: 1.5px;
 }
 
+.nodes text {
+  font-size: 10px;
+  color: green;
+}
+
 </style>
 <svg width="960" height="600"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -50,8 +55,23 @@ d3.json("interests.json", function(error, graph) {
           .on("drag", dragged)
           .on("end", dragended));
 
-  node.append("title")
-      .text(function(d) { return d.id; });
+  console.log(graph.nodes)
+  var labels = svg.selectAll("text")
+        .data(graph.nodes)
+        .enter()
+        .append("text")
+        .attr("dx", function(d) {
+          //console.log(d.x)
+          return 12;
+        })
+        .attr("dy", function(d) {
+          console.log(d)
+          return ".35em";
+        })
+        .text(function(d) { return d.id; });
+
+  // node.append("title")
+  //     .text(function(d) { return d.id; });
 
   simulation.nodes(graph.nodes)
       .on("tick", ticked);
@@ -71,7 +91,7 @@ d3.json("interests.json", function(error, graph) {
 
   simulation.force("link")
       .links(graph.links)
-      .distance(width/4);
+      .distance(width/10);
 
   function wiggle(min, max) {
       r = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -87,8 +107,12 @@ d3.json("interests.json", function(error, graph) {
         .attr("y2", function(d) { return d.target.y; });
 
     node
-        .attr("cx", function(d, i) { return (i < 3) ? ((960 / 2) + wiggle(-10,10)) : d.x; })
-        .attr("cy", function(d, i) { return (i < 3) ? ((600 / 2) + wiggle(-10,10)) : d.y; });
+        .attr("cx", function(d, i) { return d.x; }) //{ return (i < 3) ? ((960 / 2) + wiggle(-10,10)) : d.x; })
+        .attr("cy", function(d, i) { return d.y; }); //{ return (i < 3) ? ((600 / 2) + wiggle(-10,10)) : d.y; });
+
+    labels
+      .attr("x", function(d) { return d.x; })
+      .attr("y", function(d) {return d.y; })
   }
 });
 
