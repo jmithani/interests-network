@@ -71,6 +71,7 @@ d3.json("interests.json", function(error, graph) {
           return "#8D91DD";
         }
       })
+      .attr("opacity", 0.75)
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
@@ -91,6 +92,7 @@ d3.json("interests.json", function(error, graph) {
         .style("text-transform", function(d) {
           return (+d.num > 1) ? "uppercase" : "none";
         })
+        .style("opacity", 0.8)
         .text(function(d) { return d.id; })
         .call(d3.drag() // This is one both node and label because right now they are stacked
             .on("start", dragstarted)
@@ -114,7 +116,6 @@ d3.json("interests.json", function(error, graph) {
       .distance(width/8); // Keeping all the same for now
 
   function ticked() {
-    //console.log(this)
     link
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
